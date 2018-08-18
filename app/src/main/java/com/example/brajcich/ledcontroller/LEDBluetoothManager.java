@@ -58,6 +58,10 @@ public class LEDBluetoothManager {
 
     private static LEDBluetoothManager instance;
 
+    public static boolean isBleSupported(Context c){
+        return c.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
+    }
+
     public static LEDBluetoothManager getInstance(Context c, LEDBluetoothCallback cb){
         if(instance == null){
             instance = new LEDBluetoothManager(c, cb);
@@ -69,15 +73,14 @@ public class LEDBluetoothManager {
     private LEDBluetoothManager(Context c, LEDBluetoothCallback cb){
         context = c;
         callback = cb;
+
+        final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = bluetoothManager.getAdapter();
+
         scanHandler = new ScanHandler();
         gattCallback = new GattEventCallback();
-
         transmissionQueue = new TransmissionQueue();
         characteristicWriteLock = new Object();
-    }
-
-    public boolean isBleSupported(){
-        return context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
     }
 
     public boolean isBluetoothEnabled(){
@@ -87,8 +90,6 @@ public class LEDBluetoothManager {
     public void initConnection(){
 
         if(!connected) {
-            final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-            mBluetoothAdapter = bluetoothManager.getAdapter();
             scanner = mBluetoothAdapter.getBluetoothLeScanner();
             connectTimeoutTimer = new Timer();
 
@@ -107,7 +108,9 @@ public class LEDBluetoothManager {
     public void disconnect(){
         Log.d("BLUETOOTH_CONN", "App Closing... terminating scans and connections");
 
-        connectTimeoutTimer.cancel();
+        if(connectTimeoutTimer != null) {
+            connectTimeoutTimer.cancel();
+        }
 
         if(scanning){
             scanner.stopScan(scanHandler);

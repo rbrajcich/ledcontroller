@@ -3,6 +3,8 @@ package com.example.brajcich.ledcontroller;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothManager;
@@ -34,32 +36,27 @@ import java.util.List;
 
 import static android.bluetooth.le.ScanSettings.CALLBACK_TYPE_FIRST_MATCH;
 
-public class MainActivity extends AppCompatActivity  implements LEDBluetoothCallback{
+public class MainActivity extends BluetoothConnectedActivity{
 
     private static final int REQUEST_ENABLE_BT = 1;
 
-    private LEDBluetoothManager bluetoothManager;
+    private boolean abortLaunch = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bluetoothManager = LEDBluetoothManager.getInstance(this, this);
 
-        // Use this check to determine whether BLE is supported on the device.
-        if (!bluetoothManager.isBleSupported()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle(R.string.ble_not_supported_title)
-                        .setCancelable(false)
-                        .setMessage(R.string.ble_not_supported_message)
-                        .setPositiveButton("OK", new AlertDialog.OnClickListener(){
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                MainActivity.this.finish();
-                            }
-                        }).show();
-        }else{
-            setContentView(R.layout.activity_main);
+        //Ensure required prerequisites are present and if not, alert the user
+        if(!verifyAppPrerequisites()){
+            abortLaunch = true;
+            return;
         }
+
+        //Populate the interface
+        setContentView(R.layout.activity_main);
+
+        //Trigger update of bluetooth state
+        onBluetoothEnabledOrDisabled();
 
         TextWatcher textWatcher = new TextWatcher(){
             @Override
@@ -102,20 +99,17 @@ public class MainActivity extends AppCompatActivity  implements LEDBluetoothCall
     @Override
     protected void onStart() {
         super.onStart();
+        if(abortLaunch) return;
 
-        //checks if bluetooth is enabled. if not, enable it.
-        if(!bluetoothManager.isBluetoothEnabled()){
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }else{
-            bluetoothManager.initConnection();
-        }
+        //bluetoothManager.initConnection();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        bluetoothManager.disconnect();
+        if(abortLaunch) return;
+
+        //bluetoothManager.disconnect();
     }
 
     @Override
@@ -155,6 +149,42 @@ public class MainActivity extends AppCompatActivity  implements LEDBluetoothCall
                 testText.setText("Connection Lost.");
             }
         });
+    }
+
+    @Override
+    protected void onBluetoothEnabledOrDisabled(){
+        if(!bluetoothManager.isBluetoothEnabled()){
+            ((TextView) findViewById(R.id.test_text)).setText("Bluetooth Disabled");
+        }else{
+            ((TextView) findViewById(R.id.test_text)).setText("Searching...");
+
+        }
+    }
+
+    //returns false if the app can not be started at all due to compatibility issues
+    private boolean verifyAppPrerequisites(){
+        // Check to determine whether or not BLE is supported on the device.
+        if (!LEDBluetoothManager.isBleSupported(this)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.ble_not_supported_title)
+                    .setCancelable(false)
+                    .setMessage(R.string.ble_not_supported_message)
+                    .setPositiveButton("OK", new AlertDialog.OnClickListener(){
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            MainActivity.this.finish();
+                        }
+                    }).show();
+
+            return false;
+        }
+
+        if ( ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION ) != PackageManager.PERMISSION_GRANTED ) {
+            Intent intent = new Intent(this, PermissionsActivity.class);
+            startActivity(intent);
+        }
+
+        return true;
     }
 
 }
