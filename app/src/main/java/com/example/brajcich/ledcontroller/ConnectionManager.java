@@ -44,7 +44,6 @@ public class ConnectionManager {
     private static final String CHARACTERISTIC_UUID_STRING = "0000ffe1-0000-1000-8000-00805f9b34fb";
 
     private static final int CONNECTION_TIMEOUT_MS = 5000;
-    private static final int OUTPUT_BUFFER_SIZE = 200;
 
     //States that the bluetooth connection can be in
     private int connectionState;
@@ -69,13 +68,6 @@ public class ConnectionManager {
     private GattEventCallback gattCallback;
     private Timer connectTimeoutTimer;
     private CommunicationManager communicationManager;
-
-
-    private int outputBufferPos = 0;
-    private byte[] outputBuffer;
-    private boolean writingCharacteristic = false;
-    private Object characteristicWriteLock;
-    private TransmissionQueue transmissionQueue;
 
     private static ConnectionManager instance;
 
@@ -110,8 +102,6 @@ public class ConnectionManager {
         context.registerReceiver(new BluetoothStateChangeReceiver(), filter);
 
         gattCallback = new GattEventCallback();
-        transmissionQueue = new TransmissionQueue();
-        characteristicWriteLock = new Object();
 
         final BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         mBluetoothAdapter = bluetoothManager.getAdapter();
@@ -155,6 +145,12 @@ public class ConnectionManager {
                     act.onConnectionMade(device);
                     break;
             }
+        }
+
+        if(notification == NOTIFY_CONNECTION_MADE){
+            communicationManager.onConnectionStateChanged(true);
+        }else if(notification == NOTIFY_CONNECTION_ENDED){
+            communicationManager.onConnectionStateChanged(false);
         }
     }
 
@@ -257,86 +253,17 @@ public class ConnectionManager {
         }
     }
 
-    /*
-    public void sendData(byte[] data){
-        if(connected){
-            transmissionQueue.queueTransmission(data);
-
-            synchronized(characteristicWriteLock){
-                if(!writingCharacteristic){
-                    writeNextPacket();
-                }
-            }
-        }
-    }
-
-    public void changeDeviceName(String name){
-        if(name.length() < 13 && name.length() > 0){
-            String transmission = "*N" + name + "#";
-            try {
-                sendData(transmission.getBytes("UTF-8"));
-            }catch(Exception e){}
-        }
-    }
-
-    public void previewColor(Color c){
-        if(connected){
-            transmissionQueue.showPreview(c);
-            synchronized(characteristicWriteLock){
-                if(!writingCharacteristic){
-                    writeNextPacket();
-                }
-            }
-        }
-    }
-
-    public void stopPreview(){
-
-        try {
-            String stopString = "*R#";
-            sendData(stopString.getBytes("UTF-8"));
-        }catch(Exception e){}
-
-    }
-
-    private void writeNextPacket(){
-        if(outputBuffer == null){
-            outputBuffer = transmissionQueue.pop();
-            outputBufferPos = 0;
-            if(outputBuffer != null){
-                writeFromBuffer();
-            }else{
-                writingCharacteristic = false;
-            }
-        }else{
-            writeFromBuffer();
-        }
-    }
-
-    private void writeFromBuffer(){
+    //Write a single packet (20 bytes) of data to the serial bluetooth interface
+    public void writePacket(byte[] packet){
         BluetoothGattService service = gatt.getService(UUID.fromString(SERVICE_UUID_STRING));
 
         if(service != null) {
             BluetoothGattCharacteristic characteristic = service.getCharacteristic(UUID.fromString(CHARACTERISTIC_UUID_STRING));
-            byte[] b;
 
-            writingCharacteristic = true;
-
-            if(outputBuffer.length - outputBufferPos <= 20){
-                b = Arrays.copyOfRange(outputBuffer, outputBufferPos, outputBuffer.length);
-                Log.d("BLUETOOTH_DATA", "Writing char: " + Arrays.toString(b));
-                outputBuffer = null;
-            }else{
-                b = Arrays.copyOfRange(outputBuffer, outputBufferPos, outputBufferPos + 20);
-                Log.d("BLUETOOTH_DATA", "Writing char: " + Arrays.toString(b));
-                outputBufferPos += 20;
-            }
-
-            characteristic.setValue(b);
+            characteristic.setValue(packet);
             gatt.writeCharacteristic(characteristic);
         }
     }
-    */
 
     //Handle events when devices are found by the scan operation
     private class ScanHandler extends ScanCallback {
@@ -395,15 +322,15 @@ public class ConnectionManager {
                 Log.d("BLUETOOTH_DATA", "Characteristic changed to: " + new String(characteristic.getValue(), "UTF-8"));
             }catch(Exception e){}
         }
-
+        */
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
             Log.d("BLUETOOTH_DATA", "Characteristic Written status " + status);
-            synchronized(characteristicWriteLock){
-                writeNextPacket();
+            if(communicationManager != null && status == BluetoothGatt.GATT_SUCCESS){
+                communicationManager.onPacketWriteSuccess();
             }
-        }*/
+        }
     }
 
     //Handler for changes in bluetooth enabled state

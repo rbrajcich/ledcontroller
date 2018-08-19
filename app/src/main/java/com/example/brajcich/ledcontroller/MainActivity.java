@@ -63,9 +63,9 @@ public class MainActivity extends BluetoothConnectedActivity{
                     short green = Short.parseShort(((EditText) findViewById(R.id.editText2)).getText().toString());
                     short blue = Short.parseShort(((EditText) findViewById(R.id.editText3)).getText().toString());
 
-                    //connectionManager.previewColor(new Color(red, green, blue));
+                    communicationManager.previewColor(new Color(red, green, blue));
                 }catch(Exception e){
-                    //connectionManager.stopPreview();
+                    communicationManager.stopPreview();
                 }
             }
 
@@ -82,7 +82,6 @@ public class MainActivity extends BluetoothConnectedActivity{
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //connectionManager.changeDeviceName(((EditText) findViewById(R.id.editText4)).getText().toString());
                 Intent intent = new Intent(MainActivity.this, EditLampActivity.class);
                 startActivity(intent);
             }

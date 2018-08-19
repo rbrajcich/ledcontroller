@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.Set;
+
 public abstract class BluetoothConnectedActivity extends AppCompatActivity {
 
     protected ConnectionManager connectionManager;
