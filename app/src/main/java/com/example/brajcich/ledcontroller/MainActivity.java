@@ -26,19 +26,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static android.bluetooth.le.ScanSettings.CALLBACK_TYPE_FIRST_MATCH;
 
 public class MainActivity extends BluetoothConnectedActivity{
-
-    private static final int REQUEST_ENABLE_BT = 1;
 
     private boolean abortLaunch = false;
 
@@ -56,7 +48,7 @@ public class MainActivity extends BluetoothConnectedActivity{
         setContentView(R.layout.activity_main);
 
         //Trigger update of bluetooth state
-        onBluetoothEnabledOrDisabled();
+        updateBluetoothEnabledState();
 
         TextWatcher textWatcher = new TextWatcher(){
             @Override
@@ -71,9 +63,9 @@ public class MainActivity extends BluetoothConnectedActivity{
                     short green = Short.parseShort(((EditText) findViewById(R.id.editText2)).getText().toString());
                     short blue = Short.parseShort(((EditText) findViewById(R.id.editText3)).getText().toString());
 
-                    bluetoothManager.previewColor(new Color(red, green, blue));
+                    //connectionManager.previewColor(new Color(red, green, blue));
                 }catch(Exception e){
-                    bluetoothManager.stopPreview();
+                    //connectionManager.stopPreview();
                 }
             }
 
@@ -90,7 +82,9 @@ public class MainActivity extends BluetoothConnectedActivity{
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                bluetoothManager.changeDeviceName(((EditText) findViewById(R.id.editText4)).getText().toString());
+                //connectionManager.changeDeviceName(((EditText) findViewById(R.id.editText4)).getText().toString());
+                Intent intent = new Intent(MainActivity.this, EditLampActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -100,25 +94,17 @@ public class MainActivity extends BluetoothConnectedActivity{
     protected void onStart() {
         super.onStart();
         if(abortLaunch) return;
-
-        //bluetoothManager.initConnection();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         if(abortLaunch) return;
-
-        //bluetoothManager.disconnect();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == REQUEST_ENABLE_BT && resultCode == Activity.RESULT_OK){
-            bluetoothManager.initConnection();
-        }
-
     }
 
     @Override
@@ -138,25 +124,35 @@ public class MainActivity extends BluetoothConnectedActivity{
     }
 
     @Override
-    public void onConnectionLost() {
+    public void onConnectionEnded() {
 
         Log.d("MAIN_ACTIVITY", "Connection Lost (IN MAIN)");
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                TextView testText = (TextView) findViewById(R.id.test_text);
-                testText.setText("Connection Lost.");
-            }
-        });
+        if(connectionManager.isBluetoothEnabled()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView testText = (TextView) findViewById(R.id.test_text);
+                    testText.setText("Connecting...");
+                }
+            });
+        }else{
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    TextView testText = (TextView) findViewById(R.id.test_text);
+                    testText.setText("Bluetooth Disabled");
+                }
+            });
+        }
     }
 
     @Override
-    protected void onBluetoothEnabledOrDisabled(){
-        if(!bluetoothManager.isBluetoothEnabled()){
+    protected void updateBluetoothEnabledState(){
+        if(!connectionManager.isBluetoothEnabled()){
             ((TextView) findViewById(R.id.test_text)).setText("Bluetooth Disabled");
         }else{
-            ((TextView) findViewById(R.id.test_text)).setText("Searching...");
+            ((TextView) findViewById(R.id.test_text)).setText("Connecting...");
 
         }
     }
@@ -164,7 +160,7 @@ public class MainActivity extends BluetoothConnectedActivity{
     //returns false if the app can not be started at all due to compatibility issues
     private boolean verifyAppPrerequisites(){
         // Check to determine whether or not BLE is supported on the device.
-        if (!LEDBluetoothManager.isBleSupported(this)) {
+        if (!ConnectionManager.isBleSupported(this)) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder.setTitle(R.string.ble_not_supported_title)
                     .setCancelable(false)

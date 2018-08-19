@@ -1,6 +1,7 @@
 package com.example.brajcich.ledcontroller;
 
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,34 +10,39 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-public abstract class BluetoothConnectedActivity extends AppCompatActivity implements LEDBluetoothCallback {
+public abstract class BluetoothConnectedActivity extends AppCompatActivity {
 
-    protected LEDBluetoothManager bluetoothManager;
+    protected ConnectionManager connectionManager;
+    protected CommunicationManager communicationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        bluetoothManager = LEDBluetoothManager.getInstance(this, this);
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-        registerReceiver(mReceiver, filter);
-
         super.onCreate(savedInstanceState);
+
+        connectionManager = ConnectionManager.getInstance(this);
+        communicationManager = CommunicationManager.getInstance(connectionManager);
     }
 
-    protected void onBluetoothEnabledOrDisabled(){
-        //do nothing by default
+    @Override
+    protected void onStart() {
+        super.onStart();
+        connectionManager.onActivityStarted(this);
     }
 
-    //Create a broadcast receiver to capture events when bluetooth is enabled/disabled
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            final String action = intent.getAction();
+    @Override
+    protected void onStop() {
+        super.onStop();
+        connectionManager.onActivityStopped(this);
+    }
 
-            if (action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                BluetoothConnectedActivity.this.onBluetoothEnabledOrDisabled();
-            }
-        }
-    };
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        connectionManager.onActivityDestroyed(this);
+    }
+
+    protected void updateBluetoothEnabledState(){}
+    protected void onConnectionMade(BluetoothDevice device){}
+    protected void onConnectionEnded(){}
+
 }

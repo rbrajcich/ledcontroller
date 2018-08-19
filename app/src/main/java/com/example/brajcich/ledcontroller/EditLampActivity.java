@@ -7,7 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
-public class EditLampActivity extends AppCompatActivity {
+public class EditLampActivity extends BluetoothConnectedActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
