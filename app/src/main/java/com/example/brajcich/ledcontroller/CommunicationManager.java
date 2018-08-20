@@ -1,6 +1,8 @@
 package com.example.brajcich.ledcontroller;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Robert on 8/18/2018.
@@ -20,6 +22,7 @@ public class CommunicationManager {
 
     private ConnectionManager connectionManager;
     private TransmissionQueue transmissionQueue;
+    private Set<BluetoothConnectedActivity> listeners;
 
     private boolean writingCharacteristic;
     private boolean bluetoothConnected;
@@ -33,11 +36,20 @@ public class CommunicationManager {
         connectionManager = cm;
         cm.registerCommunicationManager(this);
 
+        listeners = new HashSet<>();
         transmissionQueue = new TransmissionQueue();
 
         writingCharacteristic = false;
         bluetoothConnected = false;
         writeLock = new Object();
+    }
+
+    public void registerListener(BluetoothConnectedActivity act){
+        listeners.add(act);
+    }
+
+    public void removeListener(BluetoothConnectedActivity act){
+        listeners.remove(act);
     }
 
     public void previewColor(Color c){
@@ -105,9 +117,14 @@ public class CommunicationManager {
             writingCharacteristic = false;
             transmissionIndex += currentPacket.length;
             if (transmissionIndex >= currentTransmission.length) {
-                currentTransmission = null;
+                processCompleteTransmission();
             }
             attemptPacketWrite();
         }
+    }
+
+    private void processCompleteTransmission(){
+        //Test for relevant transmission type to notify listeners
+        currentTransmission = null;
     }
 }

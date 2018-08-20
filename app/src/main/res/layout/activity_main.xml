@@ -9,46 +9,19 @@
 
     <TextView
         android:id="@+id/test_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Disconnected" />
-
-    <EditText
-        android:id="@+id/editText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="red"
-        android:inputType="number" />
-
-    <EditText
-        android:id="@+id/editText2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="green"
-        android:inputType="number" />
-
-    <EditText
-        android:id="@+id/editText3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="blue"
-        android:inputType="number" />
-
-    <EditText
-        android:id="@+id/editText4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="New Name"
-        android:inputType="textPersonName" />
+        android:layout_marginTop="50dp"
+        android:text="Disconnected"
+        android:textAlignment="center" />
 
     <Button
         android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Change Name" />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="50dp"
+        android:text="Edit Lamp Act"
+        android:textAlignment="center" />
 
 </LinearLayout>

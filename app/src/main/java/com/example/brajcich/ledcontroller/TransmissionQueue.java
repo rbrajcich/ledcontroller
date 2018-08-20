@@ -46,23 +46,10 @@ public class TransmissionQueue {
 
         b[0] = '*';
         b[1] = 'P';
-        b[2] = charToHex(previewColor.getRed() / 16);
-        b[3] = charToHex(previewColor.getRed() % 16);
-        b[4] = charToHex(previewColor.getGreen() / 16);
-        b[5] = charToHex(previewColor.getGreen() % 16);
-        b[6] = charToHex(previewColor.getBlue() / 16);
-        b[7] = charToHex(previewColor.getBlue() % 16);
+        System.arraycopy(Color.getHexBytes(previewColor), 0, b, 2, 6);
         b[8] = '#';
 
         return b;
-    }
-
-    private byte charToHex(int b){
-        if(b < 10){
-            return (byte) (b + '0');
-        }else{
-            return (byte) (b + 'A' - 10);
-        }
     }
 
 

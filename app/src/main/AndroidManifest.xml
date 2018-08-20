@@ -27,7 +27,8 @@
         <activity android:name=".ColorPicker" />
         <activity android:name=".PermissionsActivity" />
         <activity android:name=".EditLampActivity" />
-        <activity android:name=".BluetoothConnectedActivity"></activity>
+        <activity android:name=".BluetoothConnectedActivity" />
+        <activity android:name=".EditPhaseActivity"></activity>
     </application>
 
 </manifest>

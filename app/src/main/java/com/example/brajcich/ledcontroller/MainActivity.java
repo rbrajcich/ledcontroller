@@ -50,34 +50,7 @@ public class MainActivity extends BluetoothConnectedActivity{
         //Trigger update of bluetooth state
         updateBluetoothEnabledState();
 
-        TextWatcher textWatcher = new TextWatcher(){
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                try {
-                    short red = Short.parseShort(((EditText) findViewById(R.id.editText)).getText().toString());
-                    short green = Short.parseShort(((EditText) findViewById(R.id.editText2)).getText().toString());
-                    short blue = Short.parseShort(((EditText) findViewById(R.id.editText3)).getText().toString());
-
-                    communicationManager.previewColor(new Color(red, green, blue));
-                }catch(Exception e){
-                    communicationManager.stopPreview();
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        };
-
-        ((EditText) findViewById(R.id.editText)).addTextChangedListener(textWatcher);
-        ((EditText) findViewById(R.id.editText2)).addTextChangedListener(textWatcher);
-        ((EditText) findViewById(R.id.editText3)).addTextChangedListener(textWatcher);
+        communicationManager.registerListener(this);
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +72,12 @@ public class MainActivity extends BluetoothConnectedActivity{
     protected void onStop() {
         super.onStop();
         if(abortLaunch) return;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        communicationManager.removeListener(this);
     }
 
     @Override
