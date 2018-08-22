@@ -63,8 +63,12 @@ public class MainActivity extends BluetoothConnectedActivity{
         findViewById(R.id.lamp1).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String s = ((EditText) MainActivity.this.findViewById(R.id.lamptext)).getText().toString();
-                communicationManager.startLamp("*L" + s + "#");
+                Lamp testLamp = new Lamp("Lamp-1");
+                testLamp.addPhase(new Lamp.Phase(new Color((short) 255, (short) 0, (short) 0), 5, 5));
+                testLamp.addPhase(new Lamp.Phase(new Color((short) 0, (short) 255, (short) 0), 5, 5));
+                testLamp.addPhase(new Lamp.Phase(new Color((short) 0, (short) 0, (short) 255), 5, 5));
+
+                communicationManager.startLamp(testLamp);
             }
         });
 

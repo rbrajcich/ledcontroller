@@ -26,7 +26,7 @@ public class Lamp {
     }
 
     public byte[] getLampTransmission(){
-        int buffLength = 3 + (14 * phases.length);
+        int buffLength = 3 + (14 * phases.size());
         byte[] descriptor = new byte[buffLength];
 
         descriptor[0] = '*';
@@ -38,7 +38,7 @@ public class Lamp {
             currentNum++;
         }
 
-        descriptor[buffLength] = '#';
+        descriptor[buffLength - 1] = '#';
 
         return descriptor;
     }
@@ -59,7 +59,7 @@ public class Lamp {
         return phases.get(index);
     }
 
-    public class Phase {
+    public static class Phase {
         public Color color;
         public int holdTime;  // time to display this color (in tenths of seconds)
         public int fadeTime;    // time for fade to next color (0 for instant jump)
@@ -67,8 +67,8 @@ public class Lamp {
 
         public Phase(Color c, int displayTime, int transitionTime){
             color = c;
-            displayMillis = displayTime;
-            transitionMillis = transitionTime;
+            holdTime = displayTime;
+            fadeTime = transitionTime;
             descriptor = new byte[14];
 
             // copy color bytes in
