@@ -60,6 +60,14 @@ public class MainActivity extends BluetoothConnectedActivity{
             }
         });
 
+        findViewById(R.id.lamp1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String s = ((EditText) MainActivity.this.findViewById(R.id.lamptext)).getText().toString();
+                communicationManager.startLamp("*L" + s + "#");
+            }
+        });
+
     }
 
     @Override

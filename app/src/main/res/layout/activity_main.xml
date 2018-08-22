@@ -24,4 +24,17 @@
         android:text="Edit Lamp Act"
         android:textAlignment="center" />
 
+    <EditText
+        android:id="@+id/lamptext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/lamp1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Button" />
+
 </LinearLayout>

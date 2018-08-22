@@ -61,6 +61,12 @@ public class CommunicationManager {
         }
     }
 
+    public void startLamp(String s){
+        try{
+            addTransmission(s.getBytes("UTF-8"));
+        }catch(Exception e){}
+    }
+
     public void stopPreview(){
         try {
             String stopString = "*R#";
