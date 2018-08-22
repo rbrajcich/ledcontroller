@@ -61,9 +61,14 @@ public class CommunicationManager {
         }
     }
 
-    public void startLamp(String s){
+    public void startLamp(Lamp l){
+        addTransmission(l.getLampTransmission());
+    }
+
+    public void stopLamp(){
         try{
-            addTransmission(s.getBytes("UTF-8"));
+            String stopString = "*S#";
+            addTransmission(stopString.getBytes("UTF-8"));
         }catch(Exception e){}
     }
 
