@@ -26,13 +26,24 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends BluetoothConnectedActivity{
+
+public class MainActivity extends BluetoothConnectedActivity implements ShowClickHandler{
+
+    private static final int REQUEST_NEW_LAMP = 0;
 
     private boolean abortLaunch = false;
+    private List<Lamp> lampList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,26 +63,32 @@ public class MainActivity extends BluetoothConnectedActivity{
 
         communicationManager.registerListener(this);
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        //Set up listener for "Add New Lamp" button
+        findViewById(R.id.button_new_lamp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, EditLampActivity.class);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_NEW_LAMP);
             }
         });
 
-        findViewById(R.id.lamp1).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Lamp testLamp = new Lamp("Lamp-1");
-                testLamp.addPhase(new Lamp.Phase(new Color((short) 255, (short) 0, (short) 0), 5, 5));
-                testLamp.addPhase(new Lamp.Phase(new Color((short) 0, (short) 255, (short) 0), 5, 5));
-                testLamp.addPhase(new Lamp.Phase(new Color((short) 0, (short) 0, (short) 255), 5, 5));
+        lampList = new ArrayList<>();
 
-                communicationManager.startLamp(testLamp);
-            }
-        });
+        Lamp testLamp1 = new Lamp("Blinker");
+        testLamp1.addPhase(new Lamp.Phase(new Color((short) 255, (short) 0, (short) 0), 10, 0));
+        testLamp1.addPhase(new Lamp.Phase(new Color((short) 0, (short) 255, (short) 0), 10, 0));
 
+        Lamp testLamp2 = new Lamp("Fader");
+        testLamp2.addPhase(new Lamp.Phase(new Color((short) 255, (short) 0, (short) 0), 0, 10));
+        testLamp2.addPhase(new Lamp.Phase(new Color((short) 0, (short) 255, (short) 0), 0, 10));
+
+        for(int i = 0; i < 10; i++) {
+            lampList.add(testLamp1);
+            lampList.add(testLamp2);
+        }
+
+        LampListAdapter lampListAdapter = new LampListAdapter(this, this, lampList);
+        ((ListView) findViewById(R.id.listview_lamps)).setAdapter(lampListAdapter);
     }
 
     @Override
@@ -93,21 +110,29 @@ public class MainActivity extends BluetoothConnectedActivity{
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    public void onShowClicked(Lamp lamp) {
+        communicationManager.startLamp(lamp);
     }
 
     @Override
-    public void onConnectionMade(final BluetoothDevice device) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_NEW_LAMP && resultCode == Activity.RESULT_OK){
+            //New lamp was created
 
-        final String deviceName = device.getName();
+        }
+    }
+
+    @Override
+    public void onConnectionMade() {
+
         Log.d("MAIN_ACTIVITY", "Connection Made (IN MAIN)");
 
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 TextView testText = (TextView) findViewById(R.id.test_text);
-                testText.setText("Connected to \"" + deviceName + "\"");
+                testText.setText("Connected");
             }
         });
 

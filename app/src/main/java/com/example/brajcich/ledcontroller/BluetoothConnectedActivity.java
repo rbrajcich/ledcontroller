@@ -44,7 +44,7 @@ public abstract class BluetoothConnectedActivity extends AppCompatActivity {
     }
 
     protected void updateBluetoothEnabledState(){}
-    protected void onConnectionMade(BluetoothDevice device){}
+    protected void onConnectionMade(){}
     protected void onConnectionEnded(){}
 
 }

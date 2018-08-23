@@ -142,7 +142,7 @@ public class ConnectionManager {
                     act.onConnectionEnded();
                     break;
                 case NOTIFY_CONNECTION_MADE:
-                    act.onConnectionMade(device);
+                    act.onConnectionMade();
                     break;
             }
         }
