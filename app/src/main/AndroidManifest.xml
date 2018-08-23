@@ -20,14 +20,13 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ColorPicker" />
         <activity android:name=".PermissionsActivity" />
-        <activity android:name=".EditLampActivity" />
-        <activity android:name=".BluetoothConnectedActivity" />
+        <activity
+            android:name=".EditLampActivity"
+            android:label="Lamp Editor" />
         <activity android:name=".EditPhaseActivity"></activity>
     </application>
 

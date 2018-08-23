@@ -1,10 +1,12 @@
 package com.example.brajcich.ledcontroller;
 
+import java.io.Serializable;
+
 /**
  * Created by Robert on 5/24/2018.
  */
 
-public class Color {
+public class Color implements Serializable {
     private short red;
     private short green;
     private short blue;

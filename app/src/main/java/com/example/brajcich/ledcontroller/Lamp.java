@@ -1,5 +1,6 @@
 package com.example.brajcich.ledcontroller;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,7 +8,7 @@ import java.util.List;
  * Created by Robert on 8/19/2018.
  */
 
-public class Lamp {
+public class Lamp implements Serializable {
 
     private List<Phase> phases;
     private String name;
@@ -59,7 +60,7 @@ public class Lamp {
         return phases.get(index);
     }
 
-    public static class Phase {
+    public static class Phase implements Serializable {
         public Color color;
         public int holdTime;  // time to display this color (in tenths of seconds)
         public int fadeTime;    // time for fade to next color (0 for instant jump)

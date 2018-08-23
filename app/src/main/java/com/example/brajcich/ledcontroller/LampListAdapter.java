@@ -1,6 +1,5 @@
 package com.example.brajcich.ledcontroller;
 
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -20,13 +19,13 @@ import java.util.List;
 public class LampListAdapter extends BaseAdapter implements ListAdapter{
 
     private LayoutInflater layoutInflater;
-    private ShowClickHandler showClickHandler;
+    private LampListItemCallback lampListItemCallback;
     private List<Lamp> lamps;
     private Context context;
 
-    public LampListAdapter(Context c, ShowClickHandler s, List<Lamp> l){
+    public LampListAdapter(Context c, LampListItemCallback s, List<Lamp> l){
         context = c;
-        showClickHandler = s;
+        lampListItemCallback = s;
         lamps = l;
         layoutInflater = LayoutInflater.from(c);
     }
@@ -62,7 +61,15 @@ public class LampListAdapter extends BaseAdapter implements ListAdapter{
             @Override
             public void onClick(View view) {
                 Lamp l = (Lamp) LampListAdapter.this.getItem(position);
-                showClickHandler.onShowClicked(l);
+                lampListItemCallback.onShowLampClicked(l);
+            }
+        });
+
+        // set up the callback to listen for click of "DELETE" button
+        newView.findViewById(R.id.button_delete_lamp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                lampListItemCallback.onDeleteLampClicked(position);
             }
         });
 

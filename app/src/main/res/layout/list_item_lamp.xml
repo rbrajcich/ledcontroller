@@ -5,7 +5,7 @@
     android:orientation="horizontal"
     android:paddingBottom="10dp"
     android:paddingLeft="20dp"
-    android:paddingRight="20dp"
+    android:paddingRight="10dp"
     android:paddingTop="10dp">
 
     <TextView
@@ -26,6 +26,17 @@
         android:clickable="true"
         android:padding="5dp"
         android:text="SHOW"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/button_delete_lamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:clickable="true"
+        android:layout_marginLeft="15dp"
+        android:padding="5dp"
+        android:text="DEL"
         android:textColor="#FFFFFF" />
 
 </LinearLayout>

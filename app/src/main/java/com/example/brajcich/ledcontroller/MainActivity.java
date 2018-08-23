@@ -1,49 +1,30 @@
 package com.example.brajcich.ledcontroller;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothProfile;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
-import android.bluetooth.le.ScanResult;
-import android.bluetooth.le.ScanSettings;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.ParcelUuid;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends BluetoothConnectedActivity implements ShowClickHandler{
+public class MainActivity extends BluetoothConnectedActivity implements LampListItemCallback {
 
     private static final int REQUEST_NEW_LAMP = 0;
+    private static final int REQUEST_EDIT_LAMP = 1;
 
     private boolean abortLaunch = false;
     private List<Lamp> lampList;
+    private LampListAdapter lampListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +48,7 @@ public class MainActivity extends BluetoothConnectedActivity implements ShowClic
         findViewById(R.id.button_new_lamp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, EditLampActivity.class);
-                startActivityForResult(intent, REQUEST_NEW_LAMP);
+                editLamp(null, 0);
             }
         });
 
@@ -87,8 +67,31 @@ public class MainActivity extends BluetoothConnectedActivity implements ShowClic
             lampList.add(testLamp2);
         }
 
-        LampListAdapter lampListAdapter = new LampListAdapter(this, this, lampList);
-        ((ListView) findViewById(R.id.listview_lamps)).setAdapter(lampListAdapter);
+        lampListAdapter = new LampListAdapter(this, this, lampList);
+        ListView lampListView = (ListView) findViewById(R.id.listview_lamps);
+        lampListView.setAdapter(lampListAdapter);
+
+        // set up listener for clicks on items in the lamp list
+        lampListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                editLamp((Lamp) lampListAdapter.getItem(i), i);
+            }
+        });
+    }
+
+    // opens edit lamp activity for given lamp, or for a new lamp if Lamp is null
+    private void editLamp(Lamp l, int listIndex){
+        int requestCode = REQUEST_EDIT_LAMP;
+
+        if(l == null){
+            l = new Lamp("MyLamp");
+            requestCode = REQUEST_NEW_LAMP;
+        }
+        Intent intent = new Intent(MainActivity.this, EditLampActivity.class);
+        intent.putExtra("lamp", l);
+        intent.putExtra("listIndex", listIndex);
+        startActivityForResult(intent, requestCode);
     }
 
     @Override
@@ -110,16 +113,32 @@ public class MainActivity extends BluetoothConnectedActivity implements ShowClic
     }
 
     @Override
-    public void onShowClicked(Lamp lamp) {
+    public void onShowLampClicked(Lamp lamp) {
         communicationManager.startLamp(lamp);
+    }
+
+    @Override
+    public void onDeleteLampClicked(int position) {
+        lampList.remove(position);
+        lampListAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_NEW_LAMP && resultCode == Activity.RESULT_OK){
-            //New lamp was created
+            Lamp l = (Lamp) data.getSerializableExtra("lamp");
+            if(l != null){
+                lampList.add(0, l);
+                lampListAdapter.notifyDataSetChanged();
+            }
+        }else if(requestCode == REQUEST_EDIT_LAMP && resultCode == Activity.RESULT_OK){
+            Lamp l = (Lamp) data.getSerializableExtra("lamp");
+            int listIndex = data.getIntExtra("listIndex", 0);
 
+            if(l != null){
+                lampList.set(listIndex, l);
+            }
         }
     }
 
