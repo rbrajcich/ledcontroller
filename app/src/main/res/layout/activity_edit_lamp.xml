@@ -9,25 +9,67 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/textview_lamp_name_prompt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/edittext_lamp_name"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="30dp"
             android:text="Name:"
             android:textColor="#FFFFFF"
-            android:textSize="20dp" />
+            android:textSize="16dp" />
 
         <EditText
             android:id="@+id/edittext_lamp_name"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="false"
             android:layout_alignParentTop="false"
-            android:layout_marginStart="38dp"
-            android:layout_toEndOf="@+id/textView5"
+            android:layout_centerVertical="false"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_toRightOf="@+id/textview_lamp_name_prompt"
             android:ems="10"
             android:inputType="textPersonName"
             android:textColor="#FFFFFF" />
+
+        <ListView
+            android:id="@+id/listview_phases"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/layout_cancel_save_lamp"
+            android:layout_below="@+id/edittext_lamp_name" />
+
+        <LinearLayout
+            android:id="@+id/layout_cancel_save_lamp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_cancel_lamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/button_save_lamp"
+                android:layout_weight="1"
+                android:text="@android:string/cancel" />
+
+            <Button
+                android:id="@+id/button_save_lamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_weight="1"
+                android:text="save" />
+        </LinearLayout>
     </RelativeLayout>
+
 </LinearLayout>
