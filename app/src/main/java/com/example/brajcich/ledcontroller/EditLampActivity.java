@@ -9,10 +9,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ListView;
 
-public class EditLampActivity extends BluetoothConnectedActivity {
+public class EditLampActivity extends BluetoothConnectedActivity implements PhaseListItemCallback{
 
     private Lamp lamp;
+    private PhaseListAdapter phaseListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +24,28 @@ public class EditLampActivity extends BluetoothConnectedActivity {
         Intent callingIntent = getIntent();
         lamp = (Lamp) callingIntent.getSerializableExtra("lamp");
 
-        ((EditText) findViewById(R.id.edittext_lamp_name)).setText(lamp.getName());
+        // start with the current lamp name in the edittext. NOTE append used to put cursor at end
+        ((EditText) findViewById(R.id.edittext_lamp_name)).append(lamp.getName());
+
+        // add the event handler for clicking "save"
+        findViewById(R.id.button_save_lamp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                exitSavingLamp();
+            }
+        });
+
+        // add the event handler for clicking "cancel"
+        findViewById(R.id.button_cancel_lamp).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        phaseListAdapter = new PhaseListAdapter(this, this, lamp);
+        ListView phaseListView = (ListView) findViewById(R.id.listview_phases);
+        phaseListView.setAdapter(phaseListAdapter);
 
         /*
         findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
@@ -34,7 +57,22 @@ public class EditLampActivity extends BluetoothConnectedActivity {
         });*/
     }
 
+    @Override
+    public void onRemovePhaseClicked(int position) {
+        lamp.removePhaseAt(position);
+        phaseListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onAddPhaseAfterClicked(int position) {
+        // do nothing
+    }
+
     private void exitSavingLamp(){
+        // save the name of the lamp
+        String name = ((EditText) findViewById(R.id.edittext_lamp_name)).getText().toString();
+        lamp.setName(name);
+
         Intent resultIntent = new Intent();
         resultIntent.putExtra("lamp", lamp);
         resultIntent.putExtra("listIndex", getIntent().getIntExtra("listIndex", 0));
@@ -44,6 +82,7 @@ public class EditLampActivity extends BluetoothConnectedActivity {
 
     @Override
     public void onBackPressed() {
-        exitSavingLamp();
+        // do nothing
     }
+
 }

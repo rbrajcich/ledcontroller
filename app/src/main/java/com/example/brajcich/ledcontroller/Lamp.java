@@ -60,6 +60,8 @@ public class Lamp implements Serializable {
         return phases.get(index);
     }
 
+    public int getPhaseCount() { return phases.size(); }
+
     public static class Phase implements Serializable {
         public Color color;
         public int holdTime;  // time to display this color (in tenths of seconds)
