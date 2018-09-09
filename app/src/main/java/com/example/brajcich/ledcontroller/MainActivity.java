@@ -88,6 +88,7 @@ public class MainActivity extends BluetoothConnectedActivity implements LampList
             l = new Lamp("MyLamp");
             requestCode = REQUEST_NEW_LAMP;
         }
+
         Intent intent = new Intent(MainActivity.this, EditLampActivity.class);
         intent.putExtra("lamp", l);
         intent.putExtra("listIndex", listIndex);

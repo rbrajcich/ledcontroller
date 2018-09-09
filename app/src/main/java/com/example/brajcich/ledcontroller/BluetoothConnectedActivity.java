@@ -34,6 +34,7 @@ public abstract class BluetoothConnectedActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        communicationManager.stopPreview();
         connectionManager.onActivityStopped(this);
     }
 

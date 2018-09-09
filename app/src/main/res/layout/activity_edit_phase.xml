@@ -11,13 +11,18 @@
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hue" />
+        android:layout_margin="5dp"
+        android:text="Hue"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp" />
 
     <SeekBar
         android:id="@+id/hue_seek"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="100"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:max="500"
         android:min="0"
         android:progress="0" />
 
@@ -25,27 +30,90 @@
         android:id="@+id/textView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="25dp"
-        android:text="Saturation" />
+        android:text="Saturation"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp" />
 
     <SeekBar
         android:id="@+id/saturation_seek"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="100"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:max="500"
         android:min="0"
-        android:progress="100" />
+        android:progress="500" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="25dp"
-        android:text="Brightness" />
+        android:text="Brightness"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp" />
 
     <SeekBar
         android:id="@+id/brightness_seek"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:max="100"
-        android:min="0" />
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:max="500"
+        android:min="0"
+        android:progress="0" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="25dp"
+        android:text="Hold Time"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp" />
+
+    <EditText
+        android:id="@+id/edittext_hold_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="25dp"
+        android:text="Fade Time"
+        android:textColor="#FFFFFF"
+        android:textSize="18dp" />
+
+    <EditText
+        android:id="@+id/edittext_fade_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/button_save_phase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Save" />
+
+    <Button
+        android:id="@+id/button_cancel_phase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Cancel" />
 </LinearLayout>

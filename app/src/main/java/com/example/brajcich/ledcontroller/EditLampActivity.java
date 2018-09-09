@@ -10,8 +10,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import com.example.brajcich.ledcontroller.Lamp.Phase;
 
 public class EditLampActivity extends BluetoothConnectedActivity implements PhaseListItemCallback{
+
+    private static final int REQUEST_NEW_PHASE = 0;
+    private static final int REQUEST_EDIT_PHASE = 1;
 
     private Lamp lamp;
     private PhaseListAdapter phaseListAdapter;
@@ -65,7 +69,21 @@ public class EditLampActivity extends BluetoothConnectedActivity implements Phas
 
     @Override
     public void onAddPhaseAfterClicked(int position) {
-        // do nothing
+        editPhase(null, position + 1);
+    }
+
+    private void editPhase(Phase p, int index){
+        int requestCode = REQUEST_EDIT_PHASE;
+
+        if(p == null){
+            p = new Phase(new Color((short) 0, (short) 0, (short) 0), 0, 0);
+            requestCode = REQUEST_NEW_PHASE;
+        }
+
+        Intent intent = new Intent(EditLampActivity.this, EditPhaseActivity.class);
+        intent.putExtra("phase", p);
+        intent.putExtra("listIndex", index);
+        startActivityForResult(intent, requestCode);
     }
 
     private void exitSavingLamp(){
@@ -78,6 +96,25 @@ public class EditLampActivity extends BluetoothConnectedActivity implements Phas
         resultIntent.putExtra("listIndex", getIntent().getIntExtra("listIndex", 0));
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == REQUEST_NEW_PHASE && resultCode == Activity.RESULT_OK){
+            Phase p = (Phase) data.getSerializableExtra("phase");
+            if(p != null){
+                lamp.addPhaseAt(data.getIntExtra("listIndex", 0), p);
+                phaseListAdapter.notifyDataSetChanged();
+            }
+        }else if(requestCode == REQUEST_EDIT_PHASE && resultCode == Activity.RESULT_OK){
+            Phase p = (Phase) data.getSerializableExtra("phase");
+            int listIndex = data.getIntExtra("listIndex", 0);
+            if(p != null){
+                lamp.removePhaseAt(listIndex);
+                lamp.addPhaseAt(listIndex, p);
+            }
+        }
     }
 
     @Override
