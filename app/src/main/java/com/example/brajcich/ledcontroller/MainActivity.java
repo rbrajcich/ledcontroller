@@ -1,6 +1,7 @@
 package com.example.brajcich.ledcontroller;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.support.v4.content.ContextCompat;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,22 +9,27 @@ import android.content.pm.PackageManager;
 import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
-
 
 public class MainActivity extends BluetoothConnectedActivity implements LampListItemCallback {
 
     private static final int REQUEST_NEW_LAMP = 0;
     private static final int REQUEST_EDIT_LAMP = 1;
 
+    public static final String LAMP_LIST_SIZE_KEY = "lampListSize";
+    public static final String LAMP_LIST_KEY = "lampList";
+    public static final String SHARED_PREFS_NAME = "sharedPrefs";
+
     private boolean abortLaunch = false;
-    private List<Lamp> lampList;
+    private ArrayList<Lamp> lampList;
     private LampListAdapter lampListAdapter;
 
     @Override
@@ -36,8 +42,23 @@ public class MainActivity extends BluetoothConnectedActivity implements LampList
             return;
         }
 
+        //Remove title bar
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         //Populate the interface
         setContentView(R.layout.activity_main);
+
+        ListView lampListView = (ListView) findViewById(R.id.listview_lamps);
+
+        // init list view header
+        LayoutInflater inflater = getLayoutInflater();
+        ViewGroup header = (ViewGroup)inflater.inflate(R.layout.lamp_list_header_view, lampListView, false);
+        lampListView.addHeaderView(header, null, false);
+
+        // add list adapter
+        initLampList();
+        lampListAdapter = new LampListAdapter(this, this, lampList);
+        lampListView.setAdapter(lampListAdapter);
 
         //Trigger update of bluetooth state
         updateBluetoothEnabledState();
@@ -52,30 +73,11 @@ public class MainActivity extends BluetoothConnectedActivity implements LampList
             }
         });
 
-        lampList = new ArrayList<>();
-
-        Lamp testLamp1 = new Lamp("Blinker");
-        testLamp1.addPhase(new Lamp.Phase(new Color((short) 255, (short) 0, (short) 0), 10, 0));
-        testLamp1.addPhase(new Lamp.Phase(new Color((short) 0, (short) 255, (short) 0), 10, 0));
-
-        Lamp testLamp2 = new Lamp("Fader");
-        testLamp2.addPhase(new Lamp.Phase(new Color((short) 255, (short) 0, (short) 0), 0, 10));
-        testLamp2.addPhase(new Lamp.Phase(new Color((short) 0, (short) 255, (short) 0), 0, 10));
-
-        for(int i = 0; i < 10; i++) {
-            lampList.add(testLamp1);
-            lampList.add(testLamp2);
-        }
-
-        lampListAdapter = new LampListAdapter(this, this, lampList);
-        ListView lampListView = (ListView) findViewById(R.id.listview_lamps);
-        lampListView.setAdapter(lampListAdapter);
-
         // set up listener for clicks on items in the lamp list
         lampListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                editLamp((Lamp) lampListAdapter.getItem(i), i);
+                editLamp((Lamp) lampListAdapter.getItem(i-1), i-1);
             }
         });
     }
@@ -102,6 +104,12 @@ public class MainActivity extends BluetoothConnectedActivity implements LampList
     }
 
     @Override
+    protected void onPause() {
+        saveSharedPrefs();
+        super.onPause();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         if(abortLaunch) return;
@@ -125,6 +133,12 @@ public class MainActivity extends BluetoothConnectedActivity implements LampList
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Log.d("MAIN_ACTIVITY", "test2");
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_NEW_LAMP && resultCode == Activity.RESULT_OK){
@@ -139,6 +153,7 @@ public class MainActivity extends BluetoothConnectedActivity implements LampList
 
             if(l != null){
                 lampList.set(listIndex, l);
+                lampListAdapter.notifyDataSetChanged();
             }
         }
     }
@@ -216,6 +231,34 @@ public class MainActivity extends BluetoothConnectedActivity implements LampList
         }
 
         return true;
+    }
+
+    private void saveSharedPrefs(){
+        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME, 0);
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.clear();
+        if(lampList != null && lampList.size() > 0){
+            editor.putInt(LAMP_LIST_SIZE_KEY, lampList.size());
+            for(int i = 0; i < lampList.size(); i++){
+                String ser = Utility.serialize(lampList.get(i));
+                editor.putString(LAMP_LIST_KEY + Integer.toString(i), Utility.serialize(lampList.get(i)));
+            }
+        }
+
+        editor.commit();
+    }
+
+    private void initLampList(){
+        lampList = new ArrayList<>();
+
+        SharedPreferences sharedPrefs = getApplicationContext().getSharedPreferences(SHARED_PREFS_NAME, 0);
+        int size = sharedPrefs.getInt(LAMP_LIST_SIZE_KEY, 0);
+        if(size > 0) {
+            for (int i = 0; i < size; i++) {
+                String lampString = sharedPrefs.getString(LAMP_LIST_KEY + Integer.toString(i), "");
+                lampList.add((Lamp) Utility.deserialize(lampString));
+            }
+        }
     }
 
 }

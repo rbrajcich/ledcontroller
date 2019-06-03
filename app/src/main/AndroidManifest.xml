@@ -26,8 +26,11 @@
         <activity android:name=".PermissionsActivity" />
         <activity
             android:name=".EditLampActivity"
-            android:label="Lamp Editor" />
-        <activity android:name=".EditPhaseActivity"></activity>
+            android:label="Edit Lamp"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".EditPhaseActivity"
+            android:label="Edit Color" />
     </application>
 
 </manifest>

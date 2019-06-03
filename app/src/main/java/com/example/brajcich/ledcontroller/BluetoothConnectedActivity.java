@@ -1,5 +1,6 @@
 package com.example.brajcich.ledcontroller;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -12,7 +13,7 @@ import android.util.Log;
 
 import java.util.Set;
 
-public abstract class BluetoothConnectedActivity extends AppCompatActivity {
+public abstract class BluetoothConnectedActivity extends Activity {
 
     protected ConnectionManager connectionManager;
     protected CommunicationManager communicationManager;

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import com.example.brajcich.ledcontroller.Lamp.Phase;
@@ -51,14 +52,17 @@ public class EditLampActivity extends BluetoothConnectedActivity implements Phas
         ListView phaseListView = (ListView) findViewById(R.id.listview_phases);
         phaseListView.setAdapter(phaseListAdapter);
 
-        /*
-        findViewById(R.id.button3).setOnClickListener(new View.OnClickListener() {
+        // set up listener for clicks on items in the lamp list
+        phaseListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(EditLampActivity.this, EditPhaseActivity.class);
-                startActivity(intent);
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(i == 0){ // not a real phase: it's the add button at the top
+                    editPhase(null, 0);
+                }else { // real phase: offset the index by 1
+                    editPhase((Phase) phaseListAdapter.getItem(i), i - 1);
+                }
             }
-        });*/
+        });
     }
 
     @Override

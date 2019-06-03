@@ -34,7 +34,7 @@ public class PhaseListAdapter extends BaseAdapter implements ListAdapter{
 
     @Override
     public Object getItem(int i) {
-        return lamp.getPhaseAt(i);
+        return lamp.getPhaseAt(i-1);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class PhaseListAdapter extends BaseAdapter implements ListAdapter{
 
     @Override
     public int getCount() {
-        return lamp.getPhaseCount();
+        return lamp.getPhaseCount() + 1;
     }
 
     @Override
@@ -55,6 +55,11 @@ public class PhaseListAdapter extends BaseAdapter implements ListAdapter{
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+
+        if(position == 0){
+            View newView = layoutInflater.inflate(R.layout.list_item_phase_top_add, parent, false);
+            return newView;
+        }
 
         Phase phase = (Phase) getItem(position);
         View newView = layoutInflater.inflate(R.layout.list_item_phase, parent, false);
@@ -72,14 +77,14 @@ public class PhaseListAdapter extends BaseAdapter implements ListAdapter{
         newView.findViewById(R.id.button_add_phase_after).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                phaseListItemCallback.onAddPhaseAfterClicked(position);
+                phaseListItemCallback.onAddPhaseAfterClicked(position - 1);
             }
         });
 
         newView.findViewById(R.id.button_remove_phase).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                phaseListItemCallback.onRemovePhaseClicked(position);
+                phaseListItemCallback.onRemovePhaseClicked(position - 1);
             }
         });
 

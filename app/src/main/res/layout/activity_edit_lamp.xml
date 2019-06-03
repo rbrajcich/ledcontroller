@@ -9,7 +9,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/textview_lamp_name_prompt"
@@ -41,8 +41,15 @@
             android:id="@+id/listview_phases"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@+id/layout_cancel_save_lamp"
+            android:layout_above="@+id/cancel_save_hr"
             android:layout_below="@+id/edittext_lamp_name" />
+
+        <View
+            android:id="@+id/cancel_save_hr"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#FFFFFF"
+            android:layout_above="@+id/layout_cancel_save_lamp" />
 
         <LinearLayout
             android:id="@+id/layout_cancel_save_lamp"
@@ -54,21 +61,32 @@
             <Button
                 android:id="@+id/button_cancel_lamp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentLeft="true"
+                android:layout_marginBottom="15dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="15dp"
                 android:layout_toLeftOf="@+id/button_save_lamp"
                 android:layout_weight="1"
-                android:text="@android:string/cancel" />
+                android:background="@drawable/button_bg"
+                android:text="@android:string/cancel"
+                android:textColor="#FFFFFF" />
 
             <Button
                 android:id="@+id/button_save_lamp"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="35dp"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginTop="15dp"
                 android:layout_weight="1"
-                android:text="save" />
+                android:background="@drawable/button_bg"
+                android:text="save"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
     </RelativeLayout>
 
